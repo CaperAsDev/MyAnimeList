@@ -1,14 +1,12 @@
-const { getAll, remove, } = require('../controllers/listaPreder.controllers');
-const express = require('express');
+import { getAll, remove } from '../controllers/listaPreder.controllers.js'
+import express from 'express'
 
-const routerListAnimePre = express.Router();
+const routerListAnimePre = express.Router()
 
 routerListAnimePre.route('/')
-    .get(getAll)
-
+  .get(getAll)
 
 routerListAnimePre.route('/:id')
-    .delete(remove)
+  .delete(remove)
 
-
-module.exports = routerListAnimePre;
+export default routerListAnimePre

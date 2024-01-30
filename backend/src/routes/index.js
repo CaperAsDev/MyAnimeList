@@ -1,22 +1,20 @@
-const express = require('express');
-const routerUser = require('./user.router');
-const routerGenre = require('./genre.router');
-const routerAnime = require('./anime.router');
-const routerListAnime = require('./listAnime.router');
-const routerComment = require('./comment.router');
-const routerPost = require('./post.router');
-const routerRol = require('./rol.router');
-const routerPermiso = require('./permiso.router');
-const routerNew = require('./new.router');
-const routerReview = require('./review.router');
-const routerImage = require('./image.router');
-const { verifyJwt } = require('../utils/verifyJwt');
-const routerLike = require('./like.router');
-const routerListAnimePre = require('./listaPred.router');
+import express from 'express'
+import routerUser from './user.router.js'
+import routerGenre from './genre.router.js'
+import routerAnime from './anime.router.js'
+import routerListAnime from './listAnime.router.js'
+import routerComment from './comment.router.js'
+import routerPost from './post.router.js'
+import routerRol from './rol.router.js'
+import routerPermiso from './permiso.router.js'
+import routerNew from './new.router.js'
+import routerReview from './review.router.js'
+import routerImage from './image.router.js'
+import { verifyJwt } from '../utils/verifyJwt.js'
+import routerLike from './like.router.js'
+import routerListAnimePre from './listaPred.router.js'
 
-
-
-const router = express.Router();
+const router = express.Router()
 
 // colocar las rutas aquí
 router.use('/users', routerUser)
@@ -33,6 +31,4 @@ router.use('/images', verifyJwt, routerImage)
 router.use('/likes', routerLike)
 router.use('/listasPres', routerListAnimePre)
 
-
-
-module.exports = router;
+export { router }

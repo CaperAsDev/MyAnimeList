@@ -1,15 +1,15 @@
-const { getAll, create, getOne, remove, update } = require('../controllers/rol.controllers');
-const express = require('express');
+import { getAll, create, getOne, remove, update } from '../controllers/rol.controllers.js'
+import express from 'express'
 
-const routerRol = express.Router();
+const routerRol = express.Router()
 
 routerRol.route('/')
-    .get(getAll)
-    .post(create);
+  .get(getAll)
+  .post(create)
 
 routerRol.route('/:id')
-    .get(getOne)
-    .delete(remove)
-    .put(update);
+  .get(getOne)
+  .delete(remove)
+  .put(update)
 
-module.exports = routerRol;
+export default routerRol

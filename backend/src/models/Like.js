@@ -1,11 +1,11 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../utils/connection');
+import { DataTypes } from 'sequelize'
+import sequelize from '../utils/connection.js'
 
 const Like = sequelize.define('like', {
-    userId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-});
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  }
+})
 
-module.exports = Like;
+export default Like

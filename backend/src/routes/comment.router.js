@@ -1,17 +1,16 @@
-const { getAll, create, getOne, remove, update } = require('../controllers/comment.controllers');
-const express = require('express');
-const { verifyJwt } = require('../utils/verifyJwt');
+import { getAll, create, getOne, remove, update } from '../controllers/comment.controllers.js'
+import express from 'express'
+import { verifyJwt } from '../utils/verifyJwt.js'
 
-
-const routerComment = express.Router();
+const routerComment = express.Router()
 
 routerComment.route('/')
-    .get(getAll)
-    .post(verifyJwt, create);
+  .get(getAll)
+  .post(verifyJwt, create)
 
 routerComment.route('/:id')
-    .get(verifyJwt, getOne)
-    .delete(verifyJwt, remove)
-    .put(verifyJwt, update);
+  .get(verifyJwt, getOne)
+  .delete(verifyJwt, remove)
+  .put(verifyJwt, update)
 
-module.exports = routerComment;
+export default routerComment

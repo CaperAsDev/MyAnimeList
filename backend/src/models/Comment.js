@@ -1,18 +1,16 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../utils/connection');
+import { DataTypes } from 'sequelize'
+import sequelize from '../utils/connection.js'
 
 const Comment = sequelize.define('comment', {
-    content: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    dateComment: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
+  content: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  dateComment: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW
 
+  }
+})
 
-
-    },
-});
-
-module.exports = Comment;
+export default Comment

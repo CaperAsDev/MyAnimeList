@@ -1,20 +1,16 @@
-const { getAll, create, remove } = require('../controllers/like.controllers');
-const express = require('express');
-const { verifyJwt } = require('../utils/verifyJwt');
+import { getAll, create, remove } from '../controllers/like.controllers.js'
+import express from 'express'
+import { verifyJwt } from '../utils/verifyJwt.js'
 
-
-const routerLike = express.Router();
-
+const routerLike = express.Router()
 
 routerLike.route('/')
-    .get(getAll)
+  .get(getAll)
 
 routerLike.route('/:animeId/like')
-    .post(verifyJwt, create)
-
+  .post(verifyJwt, create)
 
 routerLike.route('/:animeId/unlike')
-    .delete(verifyJwt, remove);
+  .delete(verifyJwt, remove)
 
-
-module.exports = routerLike;
+export default routerLike

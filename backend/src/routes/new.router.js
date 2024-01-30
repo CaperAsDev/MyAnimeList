@@ -1,18 +1,17 @@
-const { getAll, create, getOne, remove, update } = require('../controllers/new.controllers');
-const express = require('express');
-const { verifyJwt } = require('../utils/verifyJwt');
-const upload = require('../utils/multer');
+import { getAll, create, getOne, remove, update } from '../controllers/new.controllers.js'
+import express from 'express'
+import { verifyJwt } from '../utils/verifyJwt.js'
+import upload from '../utils/multer.js'
 
-
-const routerNew = express.Router();
+const routerNew = express.Router()
 
 routerNew.route('/')
-    .get(getAll)
-    .post(upload.single('image'), create)
+  .get(getAll)
+  .post(upload.single('image'), create)
 
 routerNew.route('/:id')
-    .get(getOne)
-    .delete(verifyJwt, remove)
-    .put(verifyJwt, update);
+  .get(getOne)
+  .delete(verifyJwt, remove)
+  .put(verifyJwt, update)
 
-module.exports = routerNew;
+export default routerNew

@@ -1,33 +1,26 @@
-const { getAll, create, getOne, remove, update, AddLista, AddGenre, AddListaPre } = require('../controllers/anime.controllers');
-const express = require('express');
-const { verifyJwt } = require('../utils/verifyJwt');
-const upload = require('../utils/multer');
+import { getAll, create, getOne, remove, update, AddLista, AddGenre, AddListaPre } from '../controllers/anime.controllers.js'
+import express from 'express'
+import upload from '../utils/multer.js'
+import { verifyJwt } from '../utils/verifyJwt.js'
 
-
-const routerAnime = express.Router();
+const routerAnime = express.Router()
 
 routerAnime.route('/')
-    .get(getAll)
-    .post(upload.single('image'), verifyJwt, create)
-
-
-
+  .get(getAll)
+  .post(upload.single('image'), verifyJwt, create)
 
 routerAnime.route('/:id')
-    .get(getOne)
-    .delete(remove)
-    .put(upload.single('image'),update);
+  .get(getOne)
+  .delete(remove)
+  .put(upload.single('image'), update)
 
 routerAnime.route('/:id/listanime')
-    .post(AddLista)
+  .post(AddLista)
 
 routerAnime.route('/:id/listanimePre')
-    .post(AddListaPre)
+  .post(AddListaPre)
 
 routerAnime.route('/:id/genres')
-    .post(AddGenre)
+  .post(AddGenre)
 
-
-
-
-module.exports = routerAnime;
+export default routerAnime

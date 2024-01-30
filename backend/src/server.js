@@ -1,18 +1,15 @@
-const app = require('./app');
-const sequelize = require('./utils/connection');
-require('./models')
-
-const PORT = process.env.PORT || 8080;
+import sequelize from './utils/connection.js'
+import { createApp } from './app.js'
+import './models/index.js'
 
 const main = async () => {
-    try {
-        sequelize.sync();
-        console.log("DB connected");
-        app.listen(PORT);
-        console.log(`Server running on port ${PORT}`);
-    } catch (error) {
-        console.log(error)
-    }
+  try {
+    await sequelize.sync({ alter: true })
+    console.log('DB connected')
+    createApp()
+  } catch (error) {
+    console.log(error)
+  }
 }
 
-main();
+main()

@@ -1,11 +1,11 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../utils/connection');
+import { DataTypes } from 'sequelize'
+import sequelize from '../utils/connection.js'
 
 const Permiso = sequelize.define('permiso', {
-    title: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-});
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false
+  }
+})
 
-module.exports = Permiso;
+export default Permiso

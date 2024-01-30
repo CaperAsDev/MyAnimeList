@@ -1,11 +1,12 @@
 {
-  "name": "express-sequelize-g26",
-  "version": "1.0.1",
+  "name": "anime_api",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "bin": "./bin/cli.js",
+  "type": "module",
   "scripts": {
-    "start": "node src/server",
+    "start": "node --watch src/server",
     "dev": "nodemon src/server"
   },
   "keywords": [],
@@ -27,6 +28,10 @@
     "sequelize": "6.32.1"
   },
   "devDependencies": {
-    "nodemon": "3.0.1"
+    "nodemon": "3.0.1",
+    "standard": "^17.1.0"
+  },
+  "eslintConfig": {
+    "extends": "standard"
   }
 }

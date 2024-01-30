@@ -1,16 +1,16 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../utils/connection');
+import { DataTypes } from 'sequelize'
+import sequelize from '../utils/connection.js'
 
 const Image = sequelize.define('image', {
-    url: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    filename: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    //animeId
-});
+  url: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  filename: {
+    type: DataTypes.STRING,
+    allowNull: false
+  }
+  // animeId
+})
 
-module.exports = Image;
+export default Image

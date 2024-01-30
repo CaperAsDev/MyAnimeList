@@ -1,15 +1,20 @@
-const multer = require('multer')
+import multer from 'multer'
+import { fileURLToPath } from 'url'
+import { dirname, join } from 'node:path'
 
-const path = require('path')
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
-const destination = path.join(__dirname, '..', 'public', 'uploads')
 const storage = multer.diskStorage({
-    destination,
-    filename: function (req, file, cb) {
-        cb(null, file.originalname)
-    }
+  destination: (req, file, cb) => {
+    const uploadPath = join(__dirname, '..', 'public', 'uploads')
+    cb(null, uploadPath)
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname)
+  }
 })
 
-const upload = multer({ storage: storage })
+const upload = multer({ storage })
 
-module.exports = upload;
+export default upload

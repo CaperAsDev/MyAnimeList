@@ -1,12 +1,12 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../utils/connection');
+import { DataTypes } from 'sequelize'
+import sequelize from '../utils/connection.js'
 
 const Genre = sequelize.define('genre', {
-    title: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true
-    },
-});
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true
+  }
+})
 
-module.exports = Genre;
+export default Genre

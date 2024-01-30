@@ -1,16 +1,16 @@
-const { getAll, create, getOne, remove, update } = require('../controllers/review.controllers');
-const express = require('express');
-const { verifyJwt } = require('../utils/verifyJwt');
+import { getAll, create, getOne, remove, update } from '../controllers/review.controllers.js'
+import express from 'express'
+import { verifyJwt } from '../utils/verifyJwt.js'
 
-const routerReview = express.Router();
+const routerReview = express.Router()
 
 routerReview.route('/')
-    .get(getAll)
-    .post(verifyJwt, create);
+  .get(getAll)
+  .post(verifyJwt, create)
 
 routerReview.route('/:id')
-    .get(getOne)
-    .delete(verifyJwt, remove)
-    .put(verifyJwt, update);
+  .get(getOne)
+  .delete(verifyJwt, remove)
+  .put(verifyJwt, update)
 
-module.exports = routerReview;
+export default routerReview

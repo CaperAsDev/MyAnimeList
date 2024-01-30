@@ -1,29 +1,23 @@
-const { getAll, create, getOne, remove, update, login, logged } = require('../controllers/user.controllers');
-const express = require('express');
-const { verifyJwt } = require('../utils/verifyJwt')
-const upload = require('../utils/multer');
+import { getAll, create, getOne, remove, update, login, logged } from '../controllers/user.controllers.js'
+import express from 'express'
+import { verifyJwt } from '../utils/verifyJwt.js'
+import upload from '../utils/multer.js'
 
-const routerUser = express.Router();
+const routerUser = express.Router()
 
 routerUser.route('/')
-    .get(verifyJwt, getAll)
-    .post(upload.single('profilePicture'), create)
+  .get(verifyJwt, getAll)
+  .post(upload.single('profilePicture'), create)
 
 routerUser.route('/login')
-    .post(login)
-
-
+  .post(login)
 
 routerUser.route('/me')
-    .get(verifyJwt, logged)
-
-
+  .get(verifyJwt, logged)
 
 routerUser.route('/:id')
-    .get(verifyJwt, getOne)
-    .delete(verifyJwt, remove)
-    .put(upload.single('profilePicture'), verifyJwt, update);
+  .get(verifyJwt, getOne)
+  .delete(verifyJwt, remove)
+  .put(upload.single('profilePicture'), verifyJwt, update)
 
-
-
-module.exports = routerUser;
+export default routerUser
