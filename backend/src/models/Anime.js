@@ -4,44 +4,37 @@ import sequelize from '../utils/connection.js'
 const Anime = sequelize.define('anime', {
   title: {
     type: DataTypes.STRING,
-    allowNull: true
+    allowNull: false
   },
-  description: {
-    type: DataTypes.STRING,
-    allowNull: true
+  synopsis: {
+    type: DataTypes.TEXT
   },
-
   trailer: {
-    type: DataTypes.STRING,
-    allowNull: true
-
-  },
-  image: {
-    type: DataTypes.STRING,
-    allowNull: true
-
+    type: DataTypes.STRING
   },
   status: {
-    type: DataTypes.STRING,
-    allowNull: true
-
+    type: DataTypes.STRING
   },
-  episode: {
-    type: DataTypes.STRING,
-    allowNull: true
-
+  episodes: {
+    type: DataTypes.INTEGER
   },
-  releaseDate: {
-    type: DataTypes.STRING,
-    allowNull: true
-
+  airedfrom: {
+    type: DataTypes.DATE
   },
-  lastepisode: {
-    type: DataTypes.STRING,
-    allowNull: true
-
+  airedto: {
+    type: DataTypes.DATE
+  },
+  type: {
+    type: DataTypes.ENUM('anime'),
+    allowNull: false
+  },
+  id: {
+    type: DataTypes.UUID,
+    primaryKey: true
+  },
+  season: {
+    type: DataTypes.ENUM('winter', 'summer', 'spring', 'autumn')
   }
-
 })
 
 export default Anime

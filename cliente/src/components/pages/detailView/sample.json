@@ -1,0 +1,83 @@
+{
+  "title": "Maoyuu",
+  "synopsis": "Buen anime",
+  "trailer": "http://platzi.com",
+  "status": "Finished Airing",
+  "episodes": 12,
+  "airedfrom": "2013-03-12T00:00:00.000Z",
+  "airedto": "2013-04-23T00:00:00.000Z",
+  "type": "anime",
+  "id": "b4fb96da-8dbf-4442-a81d-b10f935673d8",
+  "season": "winter",
+  "createdAt": "2024-03-11T15:19:11.631Z",
+  "updatedAt": "2024-03-11T15:19:11.631Z",
+  "userId": "ed1bee12-d979-41ac-9270-edfd1e67d291",
+  "animeImage": [
+      {
+          "filename": "maoyuu.jpeg",
+          "url": "http://localhost:1234/uploads/maoyuu.jpeg",
+          "category": "banner"
+      },
+      {
+          "filename": "maoyuu_P.jpeg",
+          "url": "http://localhost:1234/uploads/maoyuu_P.jpeg",
+          "category": "poster"
+      }
+  ],
+  "genres": [
+      {
+          "title": "Aventura",
+          "id": 3,
+          "AnimeGenre": {
+              "createdAt": "2024-03-11T15:19:12.196Z",
+              "updatedAt": "2024-03-11T15:19:12.196Z",
+              "animeId": "b4fb96da-8dbf-4442-a81d-b10f935673d8",
+              "genreId": 3
+          }
+      },
+      {
+          "title": "Romance",
+          "id": 1,
+          "AnimeGenre": {
+              "createdAt": "2024-03-11T15:19:12.196Z",
+              "updatedAt": "2024-03-11T15:19:12.196Z",
+              "animeId": "b4fb96da-8dbf-4442-a81d-b10f935673d8",
+              "genreId": 1
+          }
+      },
+      {
+          "title": "Comedia",
+          "id": 2,
+          "AnimeGenre": {
+              "createdAt": "2024-03-11T15:19:12.188Z",
+              "updatedAt": "2024-03-11T15:19:12.188Z",
+              "animeId": "b4fb96da-8dbf-4442-a81d-b10f935673d8",
+              "genreId": 2
+          }
+      }
+  ],
+  "producers": [
+      {
+          "title": "Animex",
+          "id": 1,
+          "producerAnime": {
+              "createdAt": "2024-03-11T15:19:12.381Z",
+              "updatedAt": "2024-03-11T15:19:12.381Z",
+              "animeId": "b4fb96da-8dbf-4442-a81d-b10f935673d8",
+              "producerId": 1
+          }
+      }
+  ],
+  "studios": [
+      {
+          "title": "Arms",
+          "id": 1,
+          "studioAnime": {
+              "createdAt": "2024-03-11T15:19:12.376Z",
+              "updatedAt": "2024-03-11T15:19:12.376Z",
+              "animeId": "b4fb96da-8dbf-4442-a81d-b10f935673d8",
+              "studioId": 1
+          }
+      }
+  ]
+}

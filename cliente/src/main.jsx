@@ -1,6 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { GeneralProvider } from './context/main.jsx'
+import { store } from './store.js'
+import { Provider } from 'react-redux'
+
 import { UserSignUpProvider } from './context/UseSignUpContext.jsx'
 
 import Layout from './layout/index.jsx'
@@ -14,60 +16,60 @@ import DetailView from './components/pages/detailView'
 import Creator from './components/pages/creator/index.jsx'
 
 import {
-    createBrowserRouter,
-    RouterProvider
+  createBrowserRouter,
+  RouterProvider
 } from 'react-router-dom'
 import Anime from './components/pages/anime/index.jsx'
 import Manga from './components/pages/manga/index.jsx'
 import ListDetail from './components/pages/listDetail/index.jsx'
 
 const router = createBrowserRouter([
-    {
-        path: '/',
-        element: <Layout />,
-        children: [
-            {
-                index: true,
-                element: <Home />
-            },
-            {
-                path: '/profile/:id',
-                element: <Profile />
-            },
-            {
-                path: '/profile/list/:idList',
-                element: <ListDetail />
-            },
-            {
-                path: '/comunidad',
-                element: <Community />
-            },
-            {
-                path: '/anime/:id',
-                element: <DetailView />
-            },
-            {
-                path: '/creator',
-                element: <Creator />
-            },
-            {
-                path: '/anime',
-                element: <Anime />
-            },
-            {
-                path: '/manga',
-                element: <Manga />
-            }
-        ]
-    },
-    { path: '/login', element: <Login/> },
-    { path: '/signup', element: <UserSignUpProvider><SignUp/></UserSignUpProvider> }
+  {
+    path: '/',
+    element: <Layout />,
+    children: [
+      {
+        index: true,
+        element: <Home />
+      },
+      {
+        path: '/profile/:id',
+        element: <Profile />
+      },
+      {
+        path: '/profile/list/:idList',
+        element: <ListDetail />
+      },
+      {
+        path: '/comunidad',
+        element: <Community />
+      },
+      {
+        path: '/anime/:id',
+        element: <DetailView />
+      },
+      {
+        path: '/creator',
+        element: <Creator />
+      },
+      {
+        path: '/anime',
+        element: <Anime />
+      },
+      {
+        path: '/manga',
+        element: <Manga />
+      }
+    ]
+  },
+  { path: '/login', element: <Login/> },
+  { path: '/signup', element: <UserSignUpProvider><SignUp/></UserSignUpProvider> }
 ])
 ReactDOM.createRoot(document.getElementById('root')).render(
-    <React.StrictMode>
-        <GeneralProvider>
-            <UserSignUpProvider></UserSignUpProvider>
-            <RouterProvider router={router} />
-        </GeneralProvider>
-    </React.StrictMode>
+  <React.StrictMode>
+    <Provider store={store}>
+      <UserSignUpProvider></UserSignUpProvider>
+      <RouterProvider router={router} />
+    </Provider>
+  </React.StrictMode>
 )

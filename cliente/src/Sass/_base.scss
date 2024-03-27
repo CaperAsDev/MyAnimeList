@@ -4,18 +4,22 @@ html {
   font-size: 62.5%;
 }
 
+button {
+  cursor: pointer;
+}
+
 body {
   height: 100vh;
   width: 100%;
   font-size: 1.6rem;
   background-color: $dark-blue;
   color: $white;
-  
+
   #root {
     height: 100%;
     width: 100%;
     display: grid;
-    
+
   }
 }
 

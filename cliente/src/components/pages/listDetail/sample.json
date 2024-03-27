@@ -1,0 +1,24 @@
+{
+  "id": 1,
+  "title": "comedia",
+  "description": "las mejores comedias",
+  "createdAt": "2024-03-11T16:50:01.321Z",
+  "updatedAt": "2024-03-11T16:50:01.321Z",
+  "userId": "ed1bee12-d979-41ac-9270-edfd1e67d291",
+  "animes": [
+      {
+          "title": "Maoyuu",
+          "id": "b4fb96da-8dbf-4442-a81d-b10f935673d8",
+          "animeImage": [
+              {
+                  "category": "banner",
+                  "url": "http://localhost:1234/uploads/maoyuu.jpeg"
+              },
+              {
+                  "category": "poster",
+                  "url": "http://localhost:1234/uploads/maoyuu_P.jpeg"
+              }
+          ]
+      }
+  ]
+}

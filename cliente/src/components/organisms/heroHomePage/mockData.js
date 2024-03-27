@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 /* eslint-disable quotes */
 export const mockData = [
   {

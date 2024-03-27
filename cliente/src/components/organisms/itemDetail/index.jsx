@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { AiOutlinePlus, AiOutlinePlayCircle } from 'react-icons/ai'
 
 import MangaCover from '../../atoms/mangaCover'
@@ -8,88 +8,81 @@ import ItemStatusSelector from '../../molecules/itemStatusSelector'
 import Modal from '../../atoms/modal'
 import AddToListForm from './addToListForm'
 
-import { GetAllListsApi/* , GetAllStatusApi */ } from '../../../apiConnection'
+import { useSelector } from 'react-redux'
 
-function ItemDetail ({ anime }) {
-    const token = localStorage.getItem('token')
-    const [addToListModalOpen, setAddToListModalOpen] = useState(false)
-    const [userLists, setUserLists] = useState([])
-    const [statusSelected, setStatusSelected] = useState('')
+function ItemDetail () {
+  const animeState = useSelector(({ animeDetail }) => animeDetail)
+  const user = useSelector(({ user }) => user.info)
 
-    const [getAllListsResponse, getAllListsStatus, getAllListsFetch] = GetAllListsApi()
-    // const [GetStatusResponse, GetStatusStatus, GetStatusFetch] = GetAllStatusApi()
+  const [addToListModalOpen, setAddToListModalOpen] = useState(false)
 
-    const config = {
-        headers: { Authorization: `Bearer ${token}` }
-    }
-    const addToListHandler = () => {
-        getAllListsFetch('', {}, config)
-        setAddToListModalOpen(true)
-    }
+  const addToListHandler = () => {
+    setAddToListModalOpen(true)
+  }
 
-    useEffect(() => {
-        // GetStatusFetch('', {}, config)
-
-    }, [])
-    useEffect(() => {
-        if (getAllListsStatus.success) {
-            setUserLists(getAllListsResponse)
-        }
-    }, [getAllListsResponse])
-
+  if (animeState.setted) {
+    const animeInfo = animeState.info
     return (
-        <main className='item-detail'>
-            {addToListModalOpen && (
-                <Modal toClose={setAddToListModalOpen}>
-                    <AddToListForm
-                        itemToAddId={anime.id}
-                        userLists={userLists}
-                        toCloseModal={setAddToListModalOpen}
-                    />
-                </Modal>
-            )}
-            <MangaCover item={{ image: anime.image, title: anime.title }}/>
-            <section className='item-detail__rigth-section'>
-                <div className='item-detail__upper'>
-                    <header className=' item-detail__header'>
-                        <h2 className='item-detail__title' >{anime.title}</h2>
-                        <div className='item-detail__short-info'>
-                            <StarRating itemScore={anime.score}/>
-                            <p className='item-detail__genres'>
-                                {anime.info.genres}
-                            </p>
-                        </div>
-                        <div className='item-detail__buttons' >
-                            <ItemStatusSelector
-                                selectedStatus={[statusSelected, setStatusSelected]}
-                            />
-                            <Button
-                                type='filled'
-                                text='Agregar a lista'
-                                clickHandler={addToListHandler}
-                            >
-                                <AiOutlinePlus />
-                            </Button>
-                        </div>
-                    </header>
-                    <picture className='item-detail__trailer'>
-                        <img className='item-detail__trailer-img' src={anime.banner_img} alt={`trailer de ${anime.title}`} />
-                        <Button className='play-button' text='Play'>
-                            <AiOutlinePlayCircle />
-                        </Button>
-                    </picture>
+      <main className='item-detail'>
+        {addToListModalOpen && (
+          <Modal toClose={setAddToListModalOpen}>
+            <AddToListForm
+              toCloseModal={setAddToListModalOpen}
+            />
+          </Modal>
+        )}
+        <MangaCover posterImage={{
+          url: animeInfo.animeImage.find(image => image.category === 'poster').url,
+          title: animeInfo.title
+        }}/>
+        <section className='item-detail__rigth-section'>
+          <div className='item-detail__upper'>
+            <header className=' item-detail__header'>
+              <h2 className='item-detail__title' >{animeInfo.title}</h2>
+              <div className='item-detail__short-info'>
+                <StarRating itemScore={animeInfo?.score || 5.0 }/>
+                <p className='item-detail__genres'>
+                  {animeInfo.genres.map(genre => genre.title).join(', ')}
+                </p>
+              </div>
+              {user.setted && (
+                <div className='item-detail__buttons' >
+                  <ItemStatusSelector />
+                  <Button
+                    type='filled'
+                    text='Agregar a lista'
+                    clickHandler={addToListHandler}
+                  >
+                    <AiOutlinePlus />
+                  </Button>
                 </div>
-                <section className='item-detail__synopsis'>
-                    {/* {anime.description.map((paragraph) => (
+              )}
+            </header>
+            <picture className='item-detail__trailer'>
+              <img className='item-detail__trailer-img'
+                src={animeInfo.animeImage.find(image => image.category === 'banner').url}
+                alt={`trailer de ${animeInfo.title}`} />
+              <Button className='play-button' text='Play'>
+                <AiOutlinePlayCircle />
+              </Button>
+            </picture>
+          </div>
+          <section className='item-detail__synopsis'>
+            {/* {anime.description.map((paragraph) => (
                         <p key={paragraph.length} className='item-detail__text'>
                             {paragraph}
                         </p>
                     ))} */}
-                    <p className='item-detail__text'>{anime.description}</p>
-                </section>
-            </section>
-        </main>
+            <p className='item-detail__text'>{animeInfo.synopsis}</p>
+          </section>
+        </section>
+      </main>
     )
+  } else {
+    return (
+      <div>...cargando</div>
+    )
+  }
 }
 
 export default ItemDetail

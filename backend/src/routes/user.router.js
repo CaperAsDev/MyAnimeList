@@ -1,4 +1,4 @@
-import { getAll, create, getOne, remove, update, login, logged } from '../controllers/user.controllers.js'
+import { getAll, create, getOne, remove, update, login, logged, getAnimes, modifyAnime, removeAnime } from '../controllers/user.controllers.js'
 import express from 'express'
 import { verifyJwt } from '../utils/verifyJwt.js'
 import upload from '../utils/multer.js'
@@ -19,5 +19,10 @@ routerUser.route('/:id')
   .get(verifyJwt, getOne)
   .delete(verifyJwt, remove)
   .put(upload.single('profilePicture'), verifyJwt, update)
+
+routerUser.route('/:id/animes')
+  .get(verifyJwt, getAnimes)
+  .put(verifyJwt, modifyAnime)
+  .delete(verifyJwt, removeAnime)
 
 export default routerUser

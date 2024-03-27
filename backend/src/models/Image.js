@@ -9,8 +9,18 @@ const Image = sequelize.define('image', {
   filename: {
     type: DataTypes.STRING,
     allowNull: false
+  },
+  entityType: {
+    type: DataTypes.ENUM('user', 'anime'),
+    allowNull: false
+  },
+  entityId: {
+    type: DataTypes.UUID,
+    allowNull: false
+  },
+  category: {
+    type: DataTypes.ENUM('poster', 'banner', 'profile')
   }
-  // animeId
 })
 
 export default Image

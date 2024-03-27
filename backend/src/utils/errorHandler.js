@@ -1,7 +1,7 @@
 const errorHandler = (error, _req, res, _next) => {
   if (error.name === 'SequelizeValidationError') {
     const errObj = {}
-    error.errors.foreach(er => {
+    error.errors.forEach(er => {
       errObj[er.path] = er.message
     })
     return res.status(400).json(errObj)

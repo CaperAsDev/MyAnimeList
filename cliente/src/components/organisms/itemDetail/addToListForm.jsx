@@ -1,97 +1,102 @@
-import React, { useState } from 'react'
+import React, { useEffect } from 'react'
 import toast, { Toaster } from 'react-hot-toast'
 
-import Button from '../../atoms/button'
 import { BsPlusCircle } from 'react-icons/bs'
 
-// import { AddItemToListApi } from '../../../apiConnection'
+import { GetAllUserListsApi, AddItemToListApi } from '../../../apiConnection'
 
-/*
-[
-    {
-        "id": 1,
-        "title": "Comdia",
-        "description": "Mejores series de comedia",
-        "createdAt": "2023-10-31T17:02:19.965Z",
-        "updatedAt": "2023-10-31T17:02:19.965Z",
-        "userId": 1,
-        "animes": []
-    },
-    {
-        "id": 2,
-        "title": "accion",
-        "description": "Se armaron los frutazos",
-        "createdAt": "2023-10-31T20:49:59.552Z",
-        "updatedAt": "2023-10-31T20:49:59.552Z",
-        "userId": 1,
-        "animes": []
+import { setUserList, updateUserList } from '../../../slices/userSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
+
+import getFormValues from '../../../utils/getFormValues'
+import { capitalizeFirstLetter } from '../../../utils/capitalizeFirstLetter'
+
+function AddToListForm ({ toCloseModal }) {
+  const dispatch = useDispatch()
+
+  const animeId = useParams().id
+
+  const { token, data } = useSelector(({ user }) => user.info)
+  const userLists = useSelector(({ user }) => user.custom.lists)
+
+  const [addListItemResponse, addListItemStatus, addListItemFetch] = AddItemToListApi(animeId)
+  const [userListsRes, userListsStatus, userListsFetch] = GetAllUserListsApi(data.id)
+
+  useEffect(() => {
+    if (!userLists.setted) {
+      const config = {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+      userListsFetch('', {}, config)
     }
-] */
-function AddToListForm ({ userLists, toCloseModal, itemToAddId }) {
-    // const token = localStorage.getItem('token')
-    const [selectedOption, setSelectedOption] = useState('')
-    // const [addListItemResponse, addListItemStatus, addListItemFetch] = AddItemToListApi(itemToAddId)
+  }, [])
 
-    const handleOptionChange = (e) => {
-        setSelectedOption(e.target.value)
+  useEffect(() => {
+    if (userListsStatus.success) {
+      dispatch(setUserList(userListsRes))
     }
-    const handleSubmit = () => {
-        if (selectedOption === '') {
-            toast.error('Selecciona una lista')
-            return
-        }
-        /* const config = {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }
-        addListItemFetch('/', [Number(selectedOption)], config) */
-        // Traer lista de local usando el id de selectedOption
-        const localList = JSON.parse(localStorage.getItem(`list${selectedOption}`))
-        // Verificar que el id del anime no esta ya en la lista si ya Esta mostrar alerta y return
-        if (localList.animes.includes(itemToAddId)) {
-            toast.error('Ya tienes esta serie agregada a esa lista')
-            return
-        }
-        // Agregar a esa lista el id del anime itemToAddId
-        localList.animes.push(itemToAddId)
-        // Subir la localList actualizada con el anime
-        localStorage.setItem(`list${selectedOption}`, JSON.stringify(localList))
+  }, [userListsStatus])
 
-        toast.success('Item agregado con exito')
-        console.log('anime agregado a la lista de id: ', selectedOption)
-        toCloseModal(false)
+  useEffect(() => {
+    if (addListItemStatus.success) {
+      toast.success('Item agregado con exito')
+      dispatch(updateUserList(addListItemResponse))
+      toCloseModal(false)
     }
+  }, [addListItemResponse])
 
-    return (
-        <div>
-            <Toaster />
-            <form className='addToList-form' onSubmit={handleSubmit}>
-                <label className='addToList-form__label'>
-                    <span>¿A que lista quieres agregarlo?</span>
-                    <select value={selectedOption} onChange={handleOptionChange}>
-                        <option value=''>-/ Selecciona una Lista \-</option>
-                        {userLists.map(list => (
-                            <option
-                                key={list.id}
-                                value={list.id}
-                            >
-                                {list.title}
-                            </option>
-                        ))}
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    const { data } = getFormValues(e.target)
 
-                    </select>
-                </label>
-                <Button
-                    type="filled"
-                    text='Agregar a la lista'
-                    clickHandler={handleSubmit}
+    if (data.selectedList === '') {
+      toast.error('Selecciona una lista')
+      return
+    }
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+    addListItemFetch(`?listId=${data.selectedList}`, {}, config)
+  }
+
+  return (
+    <div>
+      <Toaster />
+      <form className='addToList-form' onSubmit={handleSubmit}>
+        <label className='addToList-form__label'>
+          <span>¿A que lista quieres agregarlo?</span>
+          <select name='selectedList' >
+            <option value=''>-/ Selecciona una Lista \-</option>
+            {userLists.array.map(list => {
+              const alreadyInList = list.animes.some((anime) => anime.id === animeId)
+              return (
+                <option
+                  key={list.id}
+                  className={alreadyInList ? 'inList' : ''}
+                  value={list.id}
+                  disabled= {alreadyInList}
                 >
-                    <BsPlusCircle/>
-                </Button>
-            </form>
-        </div>
-    )
+                  {alreadyInList ? '✅-' : ''}
+                  {capitalizeFirstLetter(list.title)}
+                </option>
+              )
+            })}
+
+          </select>
+        </label>
+        <button
+          className="button filled"
+          type='submit'
+        >
+          <BsPlusCircle/>
+          Agregar a la lista
+        </button>
+      </form>
+    </div>
+  )
 }
 
 export default AddToListForm

@@ -1,111 +1,70 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import toast, { Toaster } from 'react-hot-toast'
 import { useParams } from 'react-router-dom'
 
-function ItemStatusSelector ({ selectedStatus }) {
-    const [selectedOption, setSelectedOption] = selectedStatus
-    const { id } = useParams()
-    const user = JSON.parse(localStorage.getItem('user'))
-    const [statusLists, setStatusLists] = useState(null)
+import { useSelector, useDispatch } from 'react-redux'
+import { setAnimeRelation } from '../../../slices/animeDetailSlice'
 
-    const handleOptionChange = (e) => {
-        setSelectedOption((prevStatus) => {
-            if (prevStatus === '') {
-                return e.target.value
-            }
-            deleteItemFromList({ lists: statusLists, idToDelete: id })
-            return e.target.value
-        })
+import { LinkUserAnimeAPI } from '../../../apiConnection'
+
+function ItemStatusSelector () {
+  /*
+  !Cuando el usuario no este logeado este componente no se renderiza
+  */
+
+  const dispatch = useDispatch()
+  const animeState = useSelector(({ animeDetail }) => animeDetail.relation)
+  const { token, data } = useSelector(({ user }) => user.info)
+
+  const { id } = useParams()// Anime Id to send as query
+
+  const [linkRes, linkStatus, linkFetch] = LinkUserAnimeAPI(data.id)
+
+  const manageAnime = ({ method, status }) => {
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
     }
-    const deleteItemFromList = ({ lists, idToDelete }) => {
-        const listWithItem = lists.find((list) => list.list.includes(idToDelete))
-        const listDeletedItem = listWithItem.list.filter((item) => Number(item) !== Number(idToDelete))
-        const otherLists = lists.filter((list) => list.name !== listWithItem.name)
-        const newLists = [...otherLists, { name: listWithItem.name, list: listDeletedItem }]
 
-        setStatusLists(newLists)
-        localStorage.setItem(`statusLists${user.id}`, JSON.stringify({ userId: user.id, lists: newLists }))
+    return method(`?anime=${id}`, JSON.stringify({ status }), config)
+  }
+  useEffect(() => {
+    if (linkStatus.success) {
+      dispatch(setAnimeRelation(linkRes))
+      if (linkRes.status)toast.success(`Estas siguiendo esta serie en ${linkRes.status}`)
+      else toast.success('Ya no estas siguiendo esta serie')
     }
-    const addItemToList = ({ lists, idToAdd, listNameToAdd }) => {
-        const listToIncrease = lists.find((list) => list.name === listNameToAdd)
-        if (!listToIncrease.list.includes(idToAdd)) {
-            listToIncrease.list.push(idToAdd)
-            const otherLists = lists.filter((list) => list.name !== listNameToAdd)
-            const newLists = [...otherLists, listToIncrease]
+  }, [linkStatus])
 
-            setStatusLists(newLists)
-            localStorage.setItem(`statusLists${user.id}`, JSON.stringify({ userId: user.id, lists: newLists }))
-        }
-    }
-    const isAnimeInLists = ({ animeId, lists }) => {
-        const isInAnyList = lists.find((list) => list.list.includes(animeId))
-        if (isInAnyList) {
-            setSelectedOption(isInAnyList.name)
-        }
-    }
-    useEffect(() => {
-        const localStatusList = localStorage.getItem(`statusLists${user.id}`)
-        if (localStatusList) {
-            const statusListParsed = JSON.parse(localStatusList)
-            console.log('StatusListParsed: ', statusListParsed)
+  const handleOptionChange = (e) => {
+    manageAnime({ method: linkFetch, status: e.target.value || null })
+  }
 
-            if (Number(statusListParsed.userId) === Number(user.id)) {
-                setStatusLists(statusListParsed.lists)
-                isAnimeInLists({ animeId: id, lists: statusListParsed.lists })
-            }
-        } else {
-            const userList = {
-                userId: user.id,
-                lists: [
-                    {
-                        name: 'Viendo',
-                        list: []
-                    },
-                    {
-                        name: 'Para Ver',
-                        list: []
-                    },
-                    {
-                        name: 'Visto',
-                        list: []
-                    }
-                ]
-            }
-            localStorage.setItem(`statusLists${user.id}`, JSON.stringify(userList))
-        }
-    }, [])
-
-    useEffect(() => {
-        if (selectedOption !== '') {
-            toast.success(`Estas siguiendo esta serie en ${selectedOption}`)
-            addItemToList({ lists: statusLists, idToAdd: id, listNameToAdd: selectedOption })
-            console.log('LocalStatusList: ', JSON.parse(localStorage.getItem(`statusLists${user.id}`)))
-        }
-    }, [selectedOption])
-
-    return (
-        <form>
-            <Toaster/>
-            <label
-                aria-label='Select a status for this Item'
-                htmlFor="status-select"
-            >
-                <select
-                    name="status"
-                    value={selectedOption}
-                    onChange={handleOptionChange}
-                    id="status-select"
-                >
-                    <option value="">-/Selecciona un estado\-</option>
-                    <option value="Viendo">
+  return (
+    <form>
+      <Toaster/>
+      <label
+        aria-label='Select a status for this Item'
+        htmlFor="status-select"
+      >
+        <select
+          name="status"
+          value={animeState.status}
+          onChange={handleOptionChange}
+          id="status-select"
+        >
+          <option value="">-/Selecciona un estado\-</option>
+          <option value="viendo">
                     Viendo
-                    </option>
-                    <option value="Visto">Visto</option>
-                    <option value="Para Ver">Para ver</option>
-                </select>
-            </label>
-        </form>
-    )
+          </option>
+          <option value="visto">Visto</option>
+          <option value="por ver">Para ver</option>
+        </select>
+      </label>
+    </form>
+  )
 }
 
 export default ItemStatusSelector

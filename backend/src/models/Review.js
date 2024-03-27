@@ -10,6 +10,7 @@ const Review = sequelize.define('review', {
     type: DataTypes.TEXT,
     allowNull: false
   }
+  // FAlta el userID
 })
 
 export default Review

@@ -1,77 +1,32 @@
-import React, { useEffect, useState } from 'react'
-import ProfileStatusListThumbnail from '../../atoms/profileStatusListThumbnail'
+import React from 'react'
+import { useParams } from 'react-router-dom'
 import ProfileCard from '../../atoms/profileCard'
-import ProfileList from '../../molecules/profileList'
-import Modal from '../../atoms/modal'
-import ModalListContainer from '../../molecules/modalListContainer'
+import ProfileList from '../../organisms/profileList'
 
-import { userData } from './mockData'
+import { useSelector } from 'react-redux'
+
+import ProfileStatusList from '../../molecules/profileStatusList'
 
 function Profile () {
-    const user = JSON.parse(localStorage.getItem('user'))
-    const [statusLists, setStatusLists] = useState(null)
+  const user = useSelector(({ user }) => user.info)
+  const { id } = useParams()
+  const canEdit = user.data.id === id
 
-    const [statusClicked, setStatusClicked] = useState(null)
-    const [listViewModalOpen, setListViewModalOpen] = useState(false)
-
-    useEffect(() => {
-        const localStatusList = localStorage.getItem(`statusLists${user.id}`)
-        if (localStatusList) {
-            const statusListParsed = JSON.parse(localStatusList)
-            console.log('StatusListParsed: ', statusListParsed)
-
-            if (Number(statusListParsed.userId) === Number(user.id)) {
-                setStatusLists(statusListParsed.lists)
-            }
-        } else {
-            const userList = {
-                userId: user.id,
-                lists: [
-                    {
-                        name: 'Viendo',
-                        list: []
-                    },
-                    {
-                        name: 'Para Ver',
-                        list: []
-                    },
-                    {
-                        name: 'Visto',
-                        list: []
-                    }
-                ]
-            }
-            localStorage.setItem(`statusLists${user.id}`, JSON.stringify(userList))
-            setStatusLists(userList)
-        }
-    }, [])
-    return (
-        <main className='profile'>
-            {listViewModalOpen && (
-                <Modal toClose={setListViewModalOpen}>
-                    <ModalListContainer lists={statusLists} listName={statusClicked} />
-                </Modal>
-            )}
-            <ProfileCard userData={userData} />
-            <section className="profile__right">
-                <section className='profile__status-bar'>
-                    {statusLists
-                        ? (statusLists.map((item, index) => (
-                            <ProfileStatusListThumbnail
-                                key={item.name}
-                                status={userData.status[index]}
-                                list={item}
-                                modalSetter={setListViewModalOpen}
-                                listNameSetter={setStatusClicked}
-                            />
-                        )))
-                        : (<p>...Cargando</p>)
-                    }
-                </section>
-                <ProfileList userData={userData}/>
-            </section>
-        </main>
-    )
+  return (
+    <main className='profile'>
+      {user.setted
+        ? (<>
+          <ProfileCard userId={id} canEdit={canEdit} />
+          <section className="profile__right">
+            <ProfileStatusList userId={id} />
+            <ProfileList userId={id} canEdit={canEdit} />
+          </section>
+        </>
+        )
+        : (<p>...Cargando</p>)
+      }
+    </main>
+  )
 }
 
 export default Profile

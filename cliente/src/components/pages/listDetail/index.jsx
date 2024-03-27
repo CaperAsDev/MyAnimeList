@@ -1,53 +1,40 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
-// import { listas } from './mockData'
+import { useSelector } from 'react-redux'
+import { GetUserListApi } from '../../../apiConnection'
+
 import ListContainer from '../../organisms/listContainer'
-import { GetAllListsApi } from '../../../apiConnection'
 
 const ListDetail = () => {
-    const { idList } = useParams()
-    const token = localStorage.getItem('token')
+  const { idList } = useParams()
+  const { token } = useSelector(({ user }) => user.info)
 
-    const [getAllListsResponse, getAllListsStatus, getAllListsFetch] = GetAllListsApi()
-    const config = {
-        headers: { Authorization: `Bearer ${token}` }
+  const [listArray, setListArray] = useState(null)
+  const [getListResponse, getListStatus, getListFetch] = GetUserListApi(idList.trim())
+
+  const config = {
+    headers: { Authorization: `Bearer ${token}` }
+  }
+
+  useEffect(() => {
+    getListFetch('', {}, config)
+  }, [idList])
+
+  useEffect(() => {
+    if (getListStatus.success) {
+      setListArray(getListResponse)
+      console.log(getListResponse)
     }
-    const [listArray, setListArray] = useState(null)
-    const [listDB, setListDB] = useState(null)
-    const [listLocal, setListLocal] = useState(null)
+  }, [getListResponse])
 
-    useEffect(() => {
-        // solicito la lista al backend
-        getAllListsFetch('', {}, config)
-    }, [idList])
-    useEffect(() => {
-        if (getAllListsStatus.success) {
-        // solicito la lista al local y seteo listas en estado
-            const myDbList = getAllListsResponse.find((list) => Number(list.id) === Number(idList))
-            const myLocalList = JSON.parse(localStorage.getItem(`list${idList}`))
-            if (myDbList && myLocalList) {
-                setListDB(myDbList)
-                setListLocal(myLocalList)
-            }
-        }
-    }, [getAllListsResponse])
-    useEffect(() => {
-        // creo la version unificada
-        // lo seteo a listArray
-        if (listDB && listLocal) {
-            const finalList = { ...listDB, animes: listLocal.animes }
-            setListArray(finalList)
-        }
-    }, [listDB, listLocal])
-
-    return (
-        <section className='list-detail'>
-            {listArray
-                ? (<ListContainer list={listArray} />)
-                : (<h3>...Cargando</h3>)
-            }
-        </section>
-    )
+  return (
+    <main className='list-detail'>
+      {listArray
+        ? (<ListContainer list={listArray} />)
+        : (<h3>...Cargando</h3>)
+      }
+    </main>
+  )
 }
 
 export default ListDetail

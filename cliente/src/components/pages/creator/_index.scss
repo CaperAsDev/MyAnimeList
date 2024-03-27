@@ -2,37 +2,18 @@
 
 .creator {
   margin-top: 9rem;
+  margin-left: 0 auto;
   padding: 1rem 4rem;
-  width: clamp(1000px, 100%, 1200px);
-  display: flex;
-  justify-content: space-around;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
 
-  &__nav-list {
+  &> :nth-child(n+3) {
+    border-left: 1px solid $white;
+  }
+
+  .forms-container {
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
-
-    .creator__button {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-      padding: 2rem;
-      border-radius: 8px;
-      border: 1px solid $white;
-      color: $white;
-      transition: all .5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-
-      &:focus,
-      &:hover,
-      &.active {
-        background-color: rgba($white, .5);
-        border: 1px solid $contrast-pink;
-        color: $dark-purple;
-      }
-      &.active{
-        transform: scale(1.1);
-      }
-    }
+    align-items: end;
   }
 
   &__form {
@@ -40,7 +21,57 @@
     flex-direction: column;
     gap: 2.5rem;
     padding: 2rem;
-    border: 1px solid $white;
+
+    &.secondary {
+      align-items: center;
+      margin-left: 2rem;
+
+      legend {
+        color: aqua;
+        font-weight: bold;
+        padding: 0 1rem;
+        border-left: 1px solid $white;
+        border-right: 1px solid $white;
+      }
+
+      .secondary-button {
+        color: $white;
+        padding: .5rem 1rem;
+        width: fit-content;
+        background-color: $contrast-pink;
+        border-radius: 8px;
+        transition: all .5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+        &:hover,
+        &:focus {
+          transform: scale(1.05);
+        }
+      }
+
+      .genres-container {
+        display: flex;
+        flex-wrap: wrap;
+        width: 200px;
+        overflow: hidden;
+        justify-content: space-evenly;
+        gap: 1rem;
+
+        .genre-label {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 1rem;
+          border-bottom: 1px solid white;
+          transition: all .5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+          &:focus,
+          &:hover {
+            transform: scale(1.05);
+            cursor: pointer;
+          }
+        }
+      }
+    }
 
     .creator__label {
       display: flex;
@@ -74,7 +105,7 @@
 
       &:focus,
       &:hover {
-        transform: scale(1.1);
+        transform: scale(1.05);
       }
     }
   }

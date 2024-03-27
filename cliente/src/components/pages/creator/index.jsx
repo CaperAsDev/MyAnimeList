@@ -1,136 +1,80 @@
-import React, { useEffect, useState } from 'react'
-import { BsFillPlusSquareFill } from 'react-icons/bs'
+import React, { useEffect, useRef } from 'react'
 import toast, { Toaster } from 'react-hot-toast'
+import { useSelector } from 'react-redux'
 
 import CreateAnimeForm from './createAnimeForm'
-import ComplementaryForm from './complementaryForm'
+import SecondaryForm from './secondaryForm'
 
-import { CreateItemApi, CreateGenreApi } from '../../../apiConnection'
+import { CreateItemApi, GetAllGenresApi, GetAllProducersApi, GetAllStudiosApi } from '../../../apiConnection'
+import getFormValues from '../../../utils/getFormValues'
 
 function Creator () {
-    const token = localStorage.getItem('token')
-    const [formSelected, setFormSelected] = useState('anime')
+  const { token } = useSelector(({ user }) => user.info)
 
-    const [genreTitle, setGenreTitle] = useState('')
-    const [mainInfoDone, setMainInfoDone] = useState(false)
+  const [createItemResponse, createItemStatus, createItemFetch] = CreateItemApi()
 
-    const [createItemResponse, createItemStatus, createItemFetch] = CreateItemApi()
-    const [createGenreResponse, createGenreStatus, createGenreFetch] = CreateGenreApi()
+  const genresFormref = useRef(null)
+  const producersFormref = useRef(null)
+  const studiosFormref = useRef(null)
 
-    useEffect(() => {
-        if (createItemStatus.success) {
-            toast.success('informacion Base Agregada')
-            setMainInfoDone(true)
-        }
-        if (createGenreStatus.success) {
-            toast.success('Genero Creado Exitosamente')
-        }
-    }, [createItemStatus, createGenreStatus])
-
-    const handleCreateGenre = (e) => {
-        e.preventDefault()
-        // ---POST REQUEST-------
-        const config = {
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
-            }
-        }
-        createGenreFetch('', JSON.stringify({ title: genreTitle }), config)
-
-        // clear inputs
-        setGenreTitle('')
+  useEffect(() => {
+    if (createItemStatus.success) {
+      toast.success('informacion Base Agregada')
+      console.log('animeCreated', createItemResponse)
     }
-    const getFormValues = (form) => {
-        const formData = new FormData(form)
-        const values = [...formData.values()]
-        const isEmpty = values.includes('')
-        const data = Object.fromEntries(formData)
+  }, [createItemStatus])
 
-        return { isEmpty, data, formData }
+  const getSecondaryData = ({ ref, title }) => {
+    try {
+      const { data } = getFormValues(ref.current)
+      const array = Array.from(Object.values(data))
+
+      if (!array.length) {
+        throw new Error(`Agrega al menos ${title}`)
+      }
+      const stringified = JSON.stringify(array)
+      return stringified
+    } catch (error) {
+      toast.error(error.message)
     }
+  }
 
-    const handleMainSubmit = (e) => {
-        e.preventDefault()
+  const handleMainSubmit = (e) => {
+    e.preventDefault()
 
-        const { isEmpty, data, formData } = getFormValues(e.currentTarget)
-        if (isEmpty) {
-            console.log('please provide all values')
-            return
-        }
+    const genresData = getSecondaryData({ ref: genresFormref, title: 'un Genero' })
+    const producersData = getSecondaryData({ ref: producersFormref, title: 'una Productora' })
+    const studiosData = getSecondaryData({ ref: studiosFormref, title: 'un Estudio' })
 
-        console.log(data)
+    const { isEmpty, formData } = getFormValues(e.currentTarget)
 
-        // ---POST REQUEST-------
-        const config = {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                Authorization: `Bearer ${token}`
-            }
-        }
-        createItemFetch('/', formData, config)
+    if (isEmpty) return
 
-        // clear inputs
-        e.currentTarget.reset()
+    formData.append('genres', genresData)
+    formData.append('producers', producersData)
+    formData.append('studios', studiosData)
+
+    // ---POST REQUEST-------
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`
+      }
     }
-    return (
-        <main className='creator'>
-            <nav className='creator__nav'>
-                <ul className='creator__nav-list'>
-                    <li className='creator__nav-item'>
-                        <button
-                            onClick={() => setFormSelected('genero')}
-                            className={`creator__button ${formSelected === 'genero' && 'active'}`}
-                        >
-                            <BsFillPlusSquareFill/>
-                        Crear genero
-                        </button>
-                    </li>
-                    <li className='creator__nav-item'>
-                        <button
-                            onClick={() => setFormSelected('anime')}
-                            className={`creator__button ${formSelected === 'anime' && 'active'}`}
-                        >
-                            <BsFillPlusSquareFill/>
-                        Crear Anime
-                        </button>
-                    </li>
-                </ul>
-            </nav>
-            <div>
-                <Toaster />
-                {
-                    formSelected === 'anime'
-                        ? !mainInfoDone
-                            ? (<CreateAnimeForm handleSubmit={handleMainSubmit}/>)
-                            : (<ComplementaryForm
-                                idAnime={createItemResponse}
-                                setDone={setMainInfoDone}
-                            />)
-                        : (
-                            <form className='creator__form' onSubmit={handleCreateGenre}>
-                                <label className='creator__label'>
-                                    <span>Titulo del genero</span>
-                                    <input
-                                        type="text"
-                                        name='title'
-                                        value={genreTitle}
-                                        onChange={(e) => setGenreTitle(e.target.value)}
-                                    />
-                                </label>
-                                <button
-                                    className='creator__submit-button'
-                                    type="submit"
-                                >
-                        Crear Genero
-                                </button>
-                            </form>
-                        )
-                }
+    createItemFetch('/', formData, config)
 
-            </div>
-        </main>
-    )
+    // clear inputs
+    // e.currentTarget.reset()
+  }
+  return (
+    <main className='creator'>
+      <Toaster />
+      <CreateAnimeForm handleSubmit={handleMainSubmit} genreFormref={genresFormref} />
+      <SecondaryForm apiConnection={GetAllGenresApi} reference={genresFormref} title={'Generos'} />
+      <SecondaryForm apiConnection={GetAllProducersApi} reference={producersFormref} title={'Productores'} />
+      <SecondaryForm apiConnection={GetAllStudiosApi} reference={studiosFormref} title={'Estudios'} />
+    </main>
+  )
 }
 
 export default Creator

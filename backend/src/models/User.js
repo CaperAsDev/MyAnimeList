@@ -15,13 +15,13 @@ const User = sequelize.define('user', {
     type: DataTypes.STRING,
     allowNull: false
   },
-  profilePicture: {
-    type: DataTypes.STRING,
-    allowNull: true // Puedes usar STRING para almacenar la URL de la imagen
-  },
   biografy: {
     type: DataTypes.STRING,
     allowNull: true // Puedes usar STRING para almacenar la URL de la imagen
+  },
+  id: {
+    type: DataTypes.UUID,
+    primaryKey: true
   }
 })
 

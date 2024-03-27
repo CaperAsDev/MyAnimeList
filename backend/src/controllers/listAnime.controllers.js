@@ -1,5 +1,6 @@
 import catchError from '../utils/catchError.js'
 import Anime from '../models/Anime.js'
+import Image from '../models/Image.js'
 import ListAnime from '../models/ListAnime.js'
 
 const getAll = catchError(async (req, res) => {
@@ -20,23 +21,70 @@ const getAll = catchError(async (req, res) => {
   return res.json(results)
 })
 
-const create = catchError(async (req, res) => {
-  const { id } = req.user
-  const { title, description } = req.body
-  const body = { title, description, userId: id }
-  const result = await ListAnime.create(body)
-  return res.status(201).json(result)
-})
-
-const getOne = catchError(async (req, res) => {
-  const userId = req.user.id
-  const { id } = req.params
-  const result = await ListAnime.findByPk(id, {
+const getUserLists = catchError(async (req, res) => {
+  const { userId } = req.params
+  const results = await ListAnime.findAll({
     where: { userId },
     include: [
       {
         model: Anime,
-        attributes: ['title'],
+        attributes: ['title', 'id'],
+        include: {
+          model: Image,
+          as: 'animeImage',
+          attributes: ['category', 'url']
+        },
+        through: {
+          attributes: [] // Esto excluye todos los atributos de la tabla pivot (AnimeLista)
+        }
+      }
+    ]
+  })
+  return res.json(results)
+})
+
+const create = catchError(async (req, res) => {
+  const userId = req.user
+  const { title, description } = req.body
+  const body = { title, description, userId }
+
+  await ListAnime.create(body)
+
+  const results = await ListAnime.findAll({
+    where: { userId },
+    include: [
+      {
+        model: Anime,
+        attributes: ['title', 'id'],
+        include: {
+          model: Image,
+          as: 'animeImage',
+          attributes: ['category', 'url']
+        },
+        through: {
+          attributes: [] // Esto excluye todos los atributos de la tabla pivot (AnimeLista)
+        }
+      }
+    ]
+  })
+  return res.status(201).json(results)
+})
+
+const getOne = catchError(async (req, res) => {
+  const userId = req.user
+  const { id } = req.params
+
+  const result = await ListAnime.findByPk(id, {
+    where: { userId }, // Creo que esto va a limitar quien puede ver la lista, solo el dueño podra acceder a ella
+    include: [
+      {
+        model: Anime,
+        attributes: ['title', 'id'],
+        include: {
+          model: Image,
+          as: 'animeImage',
+          attributes: ['category', 'url']
+        },
         through: {
           attributes: [] // Esto excluye todos los atributos de la tabla pivot (AnimeLista)
         }
@@ -69,5 +117,6 @@ export {
   create,
   getOne,
   remove,
+  getUserLists,
   update
 }

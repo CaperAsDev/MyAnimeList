@@ -1,21 +1,21 @@
-import { getAll, create, getOne, remove, update, AddLista, AddGenre, AddListaPre } from '../controllers/anime.controllers.js'
+import { getAll, create, getOne, remove, update, AddToList, AddGenre, AddListaPre } from '../controllers/anime.controllers.js'
 import express from 'express'
-import upload from '../utils/multer.js'
+import { uploadFields } from '../utils/multer.js'
 import { verifyJwt } from '../utils/verifyJwt.js'
 
 const routerAnime = express.Router()
 
 routerAnime.route('/')
   .get(getAll)
-  .post(upload.single('image'), verifyJwt, create)
+  .post(uploadFields, verifyJwt, create)
 
 routerAnime.route('/:id')
   .get(getOne)
   .delete(remove)
-  .put(upload.single('image'), update)
+  .put(uploadFields, update)
 
 routerAnime.route('/:id/listanime')
-  .post(AddLista)
+  .post(verifyJwt, AddToList)
 
 routerAnime.route('/:id/listanimePre')
   .post(AddListaPre)

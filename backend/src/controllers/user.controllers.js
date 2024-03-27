@@ -5,6 +5,8 @@ import Permiso from '../models/Permiso.js'
 import Image from '../models/Image.js'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
+import UserAnime from '../models/User_Anime.js'
+import Anime from '../models/Anime.js'
 
 const getAll = catchError(async (req, res) => {
   const results = await User.findAll({
@@ -27,29 +29,38 @@ const create = catchError(async (req, res) => {
   const hashPassword = password ? await bcrypt.hash(password, 10) : null
   console.log(`Received data: ${JSON.stringify(req.body)}`)
 
-  let imageResult = null // Inicializamos imageResult como nulo
-
-  if (req.file) {
-    // Si req.file está definido (es decir, se proporcionó una imagen), creamos una entrada de imagen
-    const { filename } = req.file
-    const url = `${req.protocol}://${req.headers.host}/uploads/${filename}`
-    imageResult = await Image.create({ filename, url })
-  }
-
   // Luego, creamos una entrada de usuario en la base de datos, asociando la imagen si está definida
+
+  const userId = crypto.randomUUID()
   const result = await User.create({
     name,
     email,
     password: hashPassword,
-    profilePicture: imageResult ? `${imageResult.url}` : null // Asociamos la ID de la imagen de perfil si existe
+    id: userId
   })
+  console.log(result)
+  if (result) {
+    if (req.file) {
+    // Si req.file está definido (es decir, se proporcionó una imagen), creamos una entrada de imagen
+      const { filename } = req.file
+      const url = `${req.protocol}://${req.headers.host}/uploads/${filename}`
+      await Image.create({ filename, url, entityType: 'user', category: 'profile', entityId: userId })
+    }
+  }
 
   return res.status(201).json(result)
 })
 
 const getOne = catchError(async (req, res) => {
   const { id } = req.params
-  const result = await User.findByPk(id)
+  const result = await User.findByPk(id, {
+    attributes: ['name', 'biografy'],
+    include: {
+      model: Image,
+      as: 'userImage',
+      attributes: ['url', 'category']
+    }
+  })
   if (!result) return res.sendStatus(404)
   return res.json(result)
 })
@@ -88,24 +99,96 @@ const update = catchError(async (req, res) => {
 
 const login = catchError(async (req, res) => {
   const { email, password } = req.body
-  const user = await User.findOne({ where: { email } })
+  const user = await User.findOne({
+    where: { email },
+    include: {
+      model: Image,
+      as: 'userImage',
+      attributes: ['category', 'url']
+    }
+  })
   if (!user) return res.sendStatus(401)
 
   const isValid = await bcrypt.compare(password, user.password)
   if (!isValid) return res.sendStatus(401).json({ message: 'Error en la contraseña' })
 
-  const token = jwt.sign(
-    { user },
-    process.env.TOKEN,
-    { expiresIn: '1d' }
+  delete user.password
 
+  const token = jwt.sign(
+    { user: user.id },
+    process.env.TOKEN,
+    { expiresIn: '7d' }
   )
-  console.log(token)
+
+  console.log('user logged')
   return res.json({ user, token })
 })
 
+const getAnimes = catchError(async (req, res) => {
+  const { id } = req.params
+  const result = await UserAnime.findAll({
+    where: { userId: id },
+    include: {
+      model: Anime,
+      attributes: ['id', 'title'],
+      include: {
+        model: Image,
+        as: 'animeImage',
+        attributes: ['category', 'url']
+      }
+    }
+  })
+  if (!result) return res.sendStatus(404)
+  return res.json(result)
+})
+
+const modifyAnime = catchError(async (req, res) => {
+  const userId = req.params.id
+  const animeId = req.query.anime
+  const body = req.body// Preparar el codigo para recibir score o reseña tambien
+
+  const user = await User.findByPk(userId)
+  if (!user) return res.status(404).send('User not found')
+
+  const anime = await Anime.findByPk(animeId, {
+    include: {
+      model: User,
+      attributes: ['id'],
+      through: {
+        attributes: ['status', 'favorite', 'score']
+      }
+    }
+  })
+  if (!anime) return res.status(404).send('Anime not found')
+
+  const relation = await UserAnime.findOrCreate({
+    where: { animeId, userId }
+  })
+
+  const updated = await relation[0].update({ ...body })
+
+  return res.json(updated)
+})
+
+const removeAnime = catchError(async (req, res) => {
+  const userId = req.params.id
+  const animeId = req.query.anime
+
+  const user = await User.findByPk(userId)
+  if (!user) return res.status(404).send('User not found')
+
+  const anime = await Anime.findByPk(animeId)
+  if (!anime) return res.status(404).send('Anime not found')
+
+  const result = await user.removeAnime(Anime)
+  return res.json(result)
+})
+
 const logged = catchError(async (req, res) => {
-  const user = req.user
+  const userId = req.user
+  const user = await User.findByPk(userId)
+  if (!user) return res.status(404).send('User not found')
+
   return res.json(user)
 })
 
@@ -116,5 +199,8 @@ export {
   remove,
   update,
   login,
+  getAnimes,
+  modifyAnime,
+  removeAnime,
   logged
 }

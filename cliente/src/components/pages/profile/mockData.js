@@ -1,6 +1,6 @@
 /* eslint-disable comma-dangle */
 /* eslint-disable quotes */
-/* eslint-disable indent */
+
 /* eslint-disable semi */
 export const userData = {
   userName: "Frutakus",

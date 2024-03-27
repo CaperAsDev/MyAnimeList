@@ -1,31 +1,27 @@
-import React, { useState } from 'react'
-import Modal from '../../atoms/modal'
-import ModalListContainer from '../../molecules/modalListContainer'
+import React from 'react'
 
-function ProfileStatusListThumbnail ({ status, list, modalSetter, listNameSetter }) {
-    const handleThumbnailClick = (e) => {
-        e.preventDefault()
-        modalSetter(true)
-        listNameSetter(list.name)
-    }
-    console.log('in thumbnail list: ', list)
-    return (
-        <button
-            className='statusThumbnail'
-            onClick={handleThumbnailClick}
-        >
-            <div className='statusThumbnail__text-container'>
-                <p className='statusThumbnail__text statusThumbnail__text--big'>{list.list.length}</p>
-                <p className='statusThumbnail__text statusThumbnail__text--small' >{list.name}</p>
-            </div>
-            <picture className='statusThumbnail__img-container'>
-                <img
-                    className='statusThumbnail__img'
-                    src={status.background_img}
-                    alt=" top 1 status list background image" />
-            </picture>
-        </button>
-    )
+function ProfileStatusListThumbnail ({ status, list, clickhandler }) {
+  return (
+    <button
+      data-list={list.title}
+      className='statusThumbnail'
+      onClick={clickhandler}
+    >
+      <div className='statusThumbnail__text-container'>
+        <p className='statusThumbnail__text statusThumbnail__text--big'>{list.animes.length}</p>
+        <p className='statusThumbnail__text statusThumbnail__text--small' >{list.title}</p>
+      </div>
+      <picture className='statusThumbnail__img-container'>
+        <img
+          className='statusThumbnail__img'
+          src={
+            status?.background_img ||
+            'https://e1.pxfuel.com/desktop-wallpaper/369/604/desktop-wallpaper-awesome-anime-banner-cool-anime-banners.jpg'
+          }
+          alt=" top 1 status list background image" />
+      </picture>
+    </button>
+  )
 }
 
 export default ProfileStatusListThumbnail
